@@ -1,0 +1,10 @@
+package iaia
+
+sourcedir = src
+modules = Iaia,
+          Iaia.Control,
+          Iaia.Data,
+          Iaia.Native.Control,
+          Iaia.Native.Data,
+          Iaia.Zoo
+opts = "-p contrib --partial-eval"
