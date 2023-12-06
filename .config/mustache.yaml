@@ -1,0 +1,11 @@
+{
+  project:
+    {
+      description: "Total recursion schemes for Idris.",
+      name: "iaia",
+      repo: "sellout/iaia",
+      summary: "Total recursion schemes for Idris",
+      version: "0.1.0",
+    },
+  type: { name: "idris" },
+}

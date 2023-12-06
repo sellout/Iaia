@@ -1,0 +1,7 @@
+/result
+/source
+/.cache/vale/*
+!/.cache/vale/Vocab/
+/.cache/vale/Vocab/*
+!/.cache/vale/Vocab/iaia/
+/.cache/direnv/
