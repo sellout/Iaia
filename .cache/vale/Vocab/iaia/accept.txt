@@ -1,0 +1,12 @@
+direnv
+garnix
+[Nn]ix
+Pfeil
+ShellCheck
+Caca
+coalgebra
+coinductive
+Iaia
+Idris
+namespace
+Yaya

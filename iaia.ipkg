@@ -7,4 +7,3 @@ modules = Iaia,
           Iaia.Native.Control,
           Iaia.Native.Data,
           Iaia.Zoo
-opts = "-p contrib --partial-eval"
