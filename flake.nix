@@ -18,11 +18,12 @@
     flake-utils,
     flaky,
     nixpkgs,
+    nixpkgs-23_05,
     self,
   }: let
     pname = "iaia";
 
-    supportedSystems = flake-utils.lib.defaultSystems;
+    supportedSystems = flaky.lib.defaultSystems;
   in
     {
       schemas = {
@@ -38,12 +39,16 @@
           ;
       };
 
-      overlays.default = final: prev: {
-        default = final: prev: {
-          idrisPackages = prev.idrisPackages.overrideAttrs (
-            old:
-              self.overlays.idris final prev old old
-          );
+      overlays = {
+        default = final: prev: let
+          pkgs-23_05 = import nixpkgs-23_05 {inherit (final) system;};
+        in {
+          idrisPackages = prev.idrisPackages.override {
+            ## NB: 23.11 doesn’t have a working Idris, so this provides one that
+            ##     should work regardless.
+            idris-no-deps = pkgs-23_05.idrisPackages.idris-no-deps;
+            overrides = self.overlays.idris final prev;
+          };
         };
 
         idris = final: prev: ifinal: iprev: {
@@ -74,6 +79,7 @@
     }
     // flake-utils.lib.eachSystem supportedSystems (system: let
       pkgs = import nixpkgs {inherit system;};
+      pkgs-23_05 = import nixpkgs-23_05 {inherit system;};
 
       src = pkgs.lib.cleanSource ./.;
     in {
@@ -83,7 +89,7 @@
         ${pname} =
           bash-strict-mode.lib.checkedDrv
           pkgs
-          (pkgs.idrisPackages.build-idris-package {
+          (pkgs-23_05.idrisPackages.build-idris-package {
             inherit pname src;
 
             version = "0.1.0";
@@ -102,7 +108,15 @@
       projectConfigurations =
         flaky.lib.projectConfigurations.default {inherit pkgs self;};
 
-      devShells = self.projectConfigurations.${system}.devShells;
+      devShells =
+        ## TODO: Some Haskell packages (like pandoc) have issues on i686. But it
+        ##       should be possible to just disable checks or something in most
+        ##       cases.
+        if system == "i686-linux"
+        then {}
+        else
+          self.projectConfigurations.${system}.devShells
+          // {default = flaky.lib.devShells.default system self [] "";};
       checks = self.projectConfigurations.${system}.checks;
       formatter = self.projectConfigurations.${system}.formatter;
     });
@@ -112,6 +126,7 @@
       inputs = {
         flake-utils.follows = "flake-utils";
         flaky.follows = "flaky";
+        nixpkgs.follows = "nixpkgs";
       };
       url = "github:sellout/bash-strict-mode";
     };
@@ -122,13 +137,14 @@
       inputs = {
         bash-strict-mode.follows = "bash-strict-mode";
         flake-utils.follows = "flake-utils";
-        home-manager.url = "github:nix-community/home-manager/release-23.05";
         nixpkgs.follows = "nixpkgs";
       };
       url = "github:sellout/flaky";
     };
 
+    nixpkgs.url = "github:NixOS/nixpkgs/release-23.11";
+
     ## Idris is broken in Nixpkgs 23.11
-    nixpkgs.url = "github:NixOS/nixpkgs/release-23.05";
+    nixpkgs-23_05.url = "github:NixOS/nixpkgs/release-23.05";
   };
 }

@@ -30,6 +30,8 @@
         "Caca"
         "coalgebra"
         "coinductive"
+        "Dhall"
+        "formatters"
         "Iaia"
         "Idris"
         "namespace"

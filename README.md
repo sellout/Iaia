@@ -1,6 +1,10 @@
 # Iaia
 
-A total recursion scheme library for Idris
+[![built with garnix](https://img.shields.io/endpoint?url=https%3A%2F%2Fgarnix.io%2Fapi%2Fbadges%2Fsellout%2Fiaia)](https://garnix.io)
+
+Total recursion schemes for Idris
+
+[API documentation](https://sellout.github.io/Iaia/)
 
 ## Overview
 
@@ -34,22 +38,57 @@ Corecursive    Steppable    Recursive
               Birecursive
 ```
 
-## sister libraries
+## development
 
-This is part of a family of recursion scheme libraries, alongside [Yaya](https://github.com/sellout/yaya) in Haskell and [Turtles](https://github.com/sellout/turtles) in Scala. They all have the same general approach and goal, which is providing _total_ alternatives to general recursion to help eliminate non-termination from your software.
+We recommend the following steps to make working in this repository as easy as possible.
+
+### Nix users
+
+#### `direnv allow`
+
+This command ensures that any work you do within this repository happens within a consistent reproducible environment. That environment provides various debugging tools, etc. When you leave this directory, you will leave that environment behind, so it doesn’t impact anything else on your system.
+
+#### `project-manager switch`
+
+This is sort-of a catch-all for keeping your environment up-to-date. It regenerates files, wires up the project’s Git configuration, ensures the shells have the right packages, configured the right way, enables checks & formatters, etc.
+
+## building & development
+
+Especially if you are unfamiliar with the default ecosystem, there is a flake-based Nix build. If you are unfamiliar with Nix, [Nix adjacent](...) can help you get things working in the shortest time and least effort possible.
+
+### if you have `nix` installed
+
+`nix build` will build and test the project fully.
+
+`nix develop` will put you into an environment where the traditional build tooling works. If you also have `direnv` installed, then you should automatically be in that environment when you're in a directory in this project.
+
+## versioning
+
+In the absolute, almost every change is a breaking change. This section describes how we mitigate that to offer minor updates and revisions.
+
+## comparisons
+
+Other projects similar to this one, and how they differ.
+
+### sister libraries
+
+This is part of a family of recursion scheme libraries, alongside [Yaya](https://github.com/sellout/yaya) in Haskell and [Turtles](https://github.com/sellout/turtles) in Scala. They all have the same general approach and goal, which is providing _total_ alternatives to general recursion to help remove non-termination from your software.
 
 However, each of these libraries, being implemented in different languages, is necessarily a bit different.
 
-|                                               | `Fix`              | “unsafe” operations                         | `Steppable` superclasses       | `Zoo`       |
-| --------------------------------------------- | ------------------ | ------------------------------------------- | ------------------------------ | ----------- |
-| [Caca](https://github.com/sellout/caca)       | inductive          | `unsafe` namespace in `unsafe` library      | `Projectable`                  | encouraged  |
-| [Dada](https://github.com/sellout/dada)       | N/A                | N/A                                         | `Embeddable` and `Projectable` | encouraged  |
-| Iaia                                          | inductive, bounded | `Native` (because they’re tagged `partial`) | `Embeddable` and `Projectable` | discouraged |
-| [Turtles](https://github.com/sellout/turtles) | inductive          | `Unsafe` package in `unsafe` library        | `Projectable`                  | encouraged  |
-| [Yaya](https://github.com/sellout/yaya)       | inductive          | `Unsafe` module in `unsafe` package         | `Projectable`                  | discouraged |
+|                                                                    | `Fix`              | “unsafe” operations                         | `Steppable` superclasses       | `Zoo`       |
+| ------------------------------------------------------------------ | ------------------ | ------------------------------------------- | ------------------------------ | ----------- |
+| [Caca](https://github.com/sellout/caca) (C++)                      | inductive          | `unsafe` namespace in `unsafe` library      | `Projectable`                  | encouraged  |
+| [Dada](https://github.com/sellout/dada) (Dhall)                    | N/A                | N/A                                         | `Embeddable` and `Projectable` | encouraged  |
+| Iaia (Idris)                                                       | inductive, bounded | `Native` (because they’re tagged `partial`) | `Embeddable` and `Projectable` | discouraged |
+| [Turtles](https://github.com/sellout/turtles) (Scala)              | inductive          | `Unsafe` package in `unsafe` library        | `Projectable`                  | encouraged  |
+| [Turtles](https://share.unison-lang.org/@sellout/turtles) (Unison) | inductive          | `unsafe` namespace in `unsafe` library      | `Embeddable` and `Projectable` | encouraged  |
+| [Yaya](https://github.com/sellout/yaya) (Haskell)                  | inductive          | `Unsafe` module in `unsafe` package         | `Projectable`                  | discouraged |
 
-## encouraging totality
+### encouraging totality
 
-- Haskell: Use [LiquidHaskell](https://github.com/ucsd-progsys/liquidhaskell)
+- Haskell:
+  - Use the [NoRecursion](https://hackage.haskell.org/package/no-recursion) GHC plugin
+  - Use [LiquidHaskell](https://ucsd-progsys.github.io/liquidhaskell/)
 - Idris: Use `%default total` in every file
 - Scala: Use [WartRemover](http://www.wartremover.org/), specifically the `Recursion` wart. However, be careful as `@tailrec` silences the warning even though it only ensures stack safety, not termination.

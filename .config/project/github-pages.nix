@@ -41,10 +41,10 @@ in {
             }
             {
               name = "Setup Pages";
-              uses = "actions/configure-pages@v3";
+              uses = "actions/configure-pages@v4";
             }
             {
-              uses = "cachix/install-nix-action@v23";
+              uses = "cachix/install-nix-action@v24";
               "with".extra_nix_config = ''
                 extra-substituters = https://cache.garnix.io
                 extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=
@@ -79,7 +79,7 @@ in {
             {
               name = "Deploy to GitHub Pages";
               id = "deployment";
-              uses = "actions/deploy-pages@v2";
+              uses = "actions/deploy-pages@v3";
             }
           ];
         };
