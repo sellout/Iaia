@@ -4,6 +4,8 @@
 
 Total recursion schemes for Idris
 
+[API documentation](https://sellout.github.io/Iaia/)
+
 ## Overview
 
 Recursion schemes allow you to separate _any_ recursion from your business logic, writing step-wise operations that can be applied in a way that guarantees termination (or, dually, progress).
@@ -74,16 +76,19 @@ This is part of a family of recursion scheme libraries, alongside [Yaya](https:/
 
 However, each of these libraries, being implemented in different languages, is necessarily a bit different.
 
-|                                               | `Fix`              | “unsafe” operations                         | `Steppable` superclasses       | `Zoo`       |
-| --------------------------------------------- | ------------------ | ------------------------------------------- | ------------------------------ | ----------- |
-| [Caca](https://github.com/sellout/caca)       | inductive          | `unsafe` namespace in `unsafe` library      | `Projectable`                  | encouraged  |
-| [Dada](https://github.com/sellout/dada)       | N/A                | N/A                                         | `Embeddable` and `Projectable` | encouraged  |
-| Iaia                                          | inductive, bounded | `Native` (because they’re tagged `partial`) | `Embeddable` and `Projectable` | discouraged |
-| [Turtles](https://github.com/sellout/turtles) | inductive          | `Unsafe` package in `unsafe` library        | `Projectable`                  | encouraged  |
-| [Yaya](https://github.com/sellout/yaya)       | inductive          | `Unsafe` module in `unsafe` package         | `Projectable`                  | discouraged |
+|                                                                    | `Fix`              | “unsafe” operations                         | `Steppable` superclasses       | `Zoo`       |
+| ------------------------------------------------------------------ | ------------------ | ------------------------------------------- | ------------------------------ | ----------- |
+| [Caca](https://github.com/sellout/caca) (C++)                      | inductive          | `unsafe` namespace in `unsafe` library      | `Projectable`                  | encouraged  |
+| [Dada](https://github.com/sellout/dada) (Dhall)                    | N/A                | N/A                                         | `Embeddable` and `Projectable` | encouraged  |
+| Iaia (Idris)                                                       | inductive, bounded | `Native` (because they’re tagged `partial`) | `Embeddable` and `Projectable` | discouraged |
+| [Turtles](https://github.com/sellout/turtles) (Scala)              | inductive          | `Unsafe` package in `unsafe` library        | `Projectable`                  | encouraged  |
+| [Turtles](https://share.unison-lang.org/@sellout/turtles) (Unison) | inductive          | `unsafe` namespace in `unsafe` library      | `Embeddable` and `Projectable` | encouraged  |
+| [Yaya](https://github.com/sellout/yaya) (Haskell)                  | inductive          | `Unsafe` module in `unsafe` package         | `Projectable`                  | discouraged |
 
 ### encouraging totality
 
-- Haskell: Use [LiquidHaskell](https://github.com/ucsd-progsys/liquidhaskell)
+- Haskell:
+  - Use the [NoRecursion](https://hackage.haskell.org/package/no-recursion) GHC plugin
+  - Use [LiquidHaskell](https://ucsd-progsys.github.io/liquidhaskell/)
 - Idris: Use `%default total` in every file
 - Scala: Use [WartRemover](http://www.wartremover.org/), specifically the `Recursion` wart. However, be careful as `@tailrec` silences the warning even though it only ensures stack safety, not termination.
