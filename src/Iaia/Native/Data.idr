@@ -19,7 +19,7 @@ mutual
   boundedFixRec (S n) f = f (BoundedFix n f)
 
 implementation Uninhabited (BoundedFix Z f) where
-  uninhabited (BFx f) impossible 
+  uninhabited (BFx f) impossible
 
 bunfix : BoundedFix (S n) f -> f (BoundedFix n f)
 bunfix = out

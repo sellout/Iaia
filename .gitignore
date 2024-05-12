@@ -1,5 +1,6 @@
 /result
 /source
+*.ibc
 /.cache/vale/*
 !/.cache/vale/config/
 /.cache/vale/config/*

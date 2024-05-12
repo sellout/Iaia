@@ -1,7 +1,10 @@
 package iaia
 
+pkgs = comonad
+
 sourcedir = src
 modules = Iaia,
+          Iaia.Applied,
           Iaia.Control,
           Iaia.Data,
           Iaia.Native.Control,
