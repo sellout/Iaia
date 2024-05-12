@@ -39,12 +39,16 @@
           ;
       };
 
-      overlays.default = final: prev: {
-        default = final: prev: {
-          idrisPackages = prev.idrisPackages.overrideAttrs (
-            old:
-              self.overlays.idris final prev old old
-          );
+      overlays = {
+        default = final: prev: let
+          pkgs-23_05 = import nixpkgs-23_05 {inherit (final) system;};
+        in {
+          idrisPackages = prev.idrisPackages.override {
+            ## NB: 23.11 doesn’t have a working Idris, so this provides one that
+            ##     should work regardless.
+            idris-no-deps = pkgs-23_05.idrisPackages.idris-no-deps;
+            overrides = self.overlays.idris final prev;
+          };
         };
 
         idris = final: prev: ifinal: iprev: {
