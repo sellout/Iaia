@@ -18,11 +18,12 @@
     flake-utils,
     flaky,
     nixpkgs,
+    nixpkgs-23_05,
     self,
   }: let
     pname = "iaia";
 
-    supportedSystems = flake-utils.lib.defaultSystems;
+    supportedSystems = flaky.lib.defaultSystems;
   in
     {
       schemas = {
@@ -74,6 +75,7 @@
     }
     // flake-utils.lib.eachSystem supportedSystems (system: let
       pkgs = import nixpkgs {inherit system;};
+      pkgs-23_05 = import nixpkgs-23_05 {inherit system;};
 
       src = pkgs.lib.cleanSource ./.;
     in {
@@ -83,7 +85,7 @@
         ${pname} =
           bash-strict-mode.lib.checkedDrv
           pkgs
-          (pkgs.idrisPackages.build-idris-package {
+          (pkgs-23_05.idrisPackages.build-idris-package {
             inherit pname src;
 
             version = "0.1.0";
@@ -102,7 +104,9 @@
       projectConfigurations =
         flaky.lib.projectConfigurations.default {inherit pkgs self;};
 
-      devShells = self.projectConfigurations.${system}.devShells;
+      devShells =
+        self.projectConfigurations.${system}.devShells
+        // {default = flaky.lib.devShells.default system self [] "";};
       checks = self.projectConfigurations.${system}.checks;
       formatter = self.projectConfigurations.${system}.formatter;
     });
@@ -112,6 +116,7 @@
       inputs = {
         flake-utils.follows = "flake-utils";
         flaky.follows = "flaky";
+        nixpkgs.follows = "nixpkgs";
       };
       url = "github:sellout/bash-strict-mode";
     };
@@ -122,13 +127,14 @@
       inputs = {
         bash-strict-mode.follows = "bash-strict-mode";
         flake-utils.follows = "flake-utils";
-        home-manager.url = "github:nix-community/home-manager/release-23.05";
         nixpkgs.follows = "nixpkgs";
       };
       url = "github:sellout/flaky";
     };
 
+    nixpkgs.url = "github:NixOS/nixpkgs/release-23.11";
+
     ## Idris is broken in Nixpkgs 23.11
-    nixpkgs.url = "github:NixOS/nixpkgs/release-23.05";
+    nixpkgs-23_05.url = "github:NixOS/nixpkgs/release-23.05";
   };
 }

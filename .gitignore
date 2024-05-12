@@ -1,7 +1,14 @@
 /result
 /source
 /.cache/vale/*
+!/.cache/vale/config/
+/.cache/vale/config/*
+!/.cache/vale/config/vocabularies/
+/.cache/vale/config/vocabularies/*
+!/.cache/vale/config/vocabularies/iaia/
 !/.cache/vale/Vocab/
 /.cache/vale/Vocab/*
 !/.cache/vale/Vocab/iaia/
+/.local/state/project-manager/
+/.local/state/nix/profiles/
 /.cache/direnv/

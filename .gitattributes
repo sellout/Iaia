@@ -1,6 +1,7 @@
 /.cache/git/config linguist-generated
 /.cache/git/hooks/pre-push linguist-generated
 /.cache/vale/Vocab/iaia/accept.txt linguist-generated
+/.cache/vale/config/vocabularies/iaia/accept.txt linguist-generated
 /.dir-locals.el linguist-generated
 /.editorconfig linguist-generated
 /.envrc linguist-generated
@@ -12,4 +13,3 @@
 /.github/workflows/flakehub-publish.yml linguist-generated
 /garnix.yaml linguist-generated
 /.github/workflows/pages.yml linguist-generated
-/.github/workflows/update-nix-lockfile.yml linguist-generated
