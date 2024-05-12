@@ -109,8 +109,14 @@
         flaky.lib.projectConfigurations.default {inherit pkgs self;};
 
       devShells =
-        self.projectConfigurations.${system}.devShells
-        // {default = flaky.lib.devShells.default system self [] "";};
+        ## TODO: Some Haskell packages (like pandoc) have issues on i686. But it
+        ##       should be possible to just disable checks or something in most
+        ##       cases.
+        if system == "i686-linux"
+        then {}
+        else
+          self.projectConfigurations.${system}.devShells
+          // {default = flaky.lib.devShells.default system self [] "";};
       checks = self.projectConfigurations.${system}.checks;
       formatter = self.projectConfigurations.${system}.formatter;
     });
