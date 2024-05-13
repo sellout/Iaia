@@ -29,8 +29,8 @@
       schemas = {
         inherit
           (flaky.schemas)
+          schemas
           overlays
-          homeConfigurations
           packages
           devShells
           projectConfigurations
