@@ -54,6 +54,8 @@ in {
               uses = "lriesebos/nix-develop-command@v1";
               "with" = {
                 command = ''
+                  ## NB: Build first so `mkdoc` can find modules for local deps
+                  idris --build iaia.ipkg
                   idris --mkdoc iaia.ipkg
                   ## We copy here to fix the permissions from the Nix symlinks
                   cp -r ./iaia_doc ./_site
