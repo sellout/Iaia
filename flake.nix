@@ -35,7 +35,6 @@
           devShells
           projectConfigurations
           checks
-          formatter
           ;
       };
 
