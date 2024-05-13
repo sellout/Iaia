@@ -1,5 +1,6 @@
 module Iaia.Control
 
+import Control.Comonad
 import Iaia
 
 %access public export
@@ -24,15 +25,12 @@ DistributiveLaw f g = {a : Type} -> f (g a) -> g (f a)
 ||| `gcata` version?
 interface Steppable t (f : Type -> Type) | t where
   project : Coalgebra f t
-  
+
 interface Costeppable t (f : Type -> Type) | t where
   embed : Algebra f t
-  
+
 interface Recursive t (f : Type -> Type) | t where
   cata : Algebra f a -> t -> a
-  -- ||| Types that have a `Costeppable` `implementation` can simply use `para'`
-  -- ||| here.
-  -- para : (f (t, a) -> a) -> t -> a
 
 interface Corecursive t (f : Type -> Type) | t where
   ana : Coalgebra f a -> a -> t
@@ -59,20 +57,17 @@ gana
   -> t
 gana k ψ = ana (lowerCoalgebra k ψ) . pure
 
--- lowerAlgebra
---   : (Functor f, Comonad w)
---   => DistributiveLaw f w
---   -> GAlgebra w f a
---   -> Algebra f (w a)
--- lowerAlgebra k φ = fmap φ . k . fmap duplicate
+lowerAlgebra
+  : (Functor f, Comonad w)
+  => DistributiveLaw f w
+  -> GAlgebra w f a
+  -> Algebra f (w a)
+lowerAlgebra k φ = map φ . k . map duplicate
 
--- gcata
---   : (Recursive t f, Functor f, Comonad w)
---   => DistributiveLaw f w
---   -> GAlgebra w f a
---   -> t
---   -> a
--- gcata k φ = extract . cata (lowerAlgebra k φ)
+-- ||| Can’t unfold directly over a monad, because it would force the entire
+-- ||| structure, so this enables an effectful stream.
+-- composeCoalgebra : (a -> m (f a)) -> Coalgebra (Compose m f) a
+-- composeCoalgebra = (Compose .)
 
 -- Arrow defined for functions
 infixr 3 ***
@@ -90,6 +85,9 @@ public export (\|/) : (a -> c) -> (b -> c) -> Either a b -> c
 f \|/ g = \a => case a of
                   Left a => f a
                   Right a => g a
+
+zipAlgebras : (Functor f) => Algebra f a -> Algebra f b -> Algebra f (Pair a b)
+zipAlgebras φ φ' = φ . map fst &&& φ' . map snd
 
 distZygo : Functor f => Algebra f a -> DistributiveLaw f (Pair a)
 distZygo φ = φ . map fst &&& map snd

@@ -92,7 +92,9 @@
           (pkgs-23_05.idrisPackages.build-idris-package {
             inherit pname src;
 
-            version = "0.1.0";
+            version = "0.2.0";
+
+            idrisDeps = [pkgs-23_05.idrisPackages.comonad];
 
             doCheck = true;
 

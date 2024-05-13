@@ -10,13 +10,11 @@ import Iaia.Control
 data Mu : (Type -> Type) -> Type where
   MuF : ({a : Type} -> Algebra f a -> a) -> Mu f
 
-mutual
-  implementation Functor f => Costeppable (Mu f) f where
-    embed fm = MuF (\φ => φ (map (cata φ) fm))
+implementation Functor f => Recursive (Mu f) f where
+  cata φ (MuF f) = f φ
 
-  implementation Functor f => Recursive (Mu f) f where
-    cata φ (MuF f) = f φ
-    -- para = para'
+implementation Functor f => Costeppable (Mu f) f where
+  embed fm = MuF (\φ => φ (map (cata φ) fm))
 
 implementation Functor f => Steppable (Mu f) f where
   project = lambek
@@ -29,12 +27,11 @@ data Nu : (Type -> Type) -> Type where
 implementation Functor f => Steppable (Nu f) f where
   project (NuF f a) = NuF f <$> f a
 
-mutual
-  implementation Functor f => Costeppable (Nu f) f where
-    embed = colambek
+implementation Corecursive (Nu f) f where
+  ana = NuF
 
-  implementation Corecursive (Nu f) f where
-    ana = NuF
+implementation Functor f => Costeppable (Nu f) f where
+  embed = colambek
 
 ||| A type that has either two values or none (isomorphic to `Maybe (a, b)`).
 ||| This is also the pattern functor for list-like structures.
