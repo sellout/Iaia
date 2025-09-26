@@ -143,7 +143,7 @@
       url = "github:sellout/flaky";
     };
 
-    nixpkgs.url = "github:NixOS/nixpkgs/release-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/release-25.05";
 
     ## Idris is broken in Nixpkgs 23.11
     nixpkgs-23_05.url = "github:NixOS/nixpkgs/release-23.05";
