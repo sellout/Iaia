@@ -1,4 +1,8 @@
-{config, lib, ...}: {
+{
+  config,
+  lib,
+  ...
+}: {
   project = {
     name = "iaia";
     summary = "Total recursion schemes for Idris";
@@ -48,7 +52,7 @@
   ## CI
   services.garnix = {
     enable = true;
-    builds.exclude = [
+    builds."*".exclude = [
       # TODO: Remove once garnix-io/garnix#285 is fixed.
       "homeConfigurations.x86_64-darwin-${config.project.name}-example"
     ];
@@ -61,6 +65,7 @@
     github = {
       enable = true;
       settings.repository = {
+        private = false;
         homepage = "https://sellout.github.io/${config.project.name}";
         topics = ["library" "recursion"];
       };

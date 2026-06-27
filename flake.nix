@@ -2,150 +2,37 @@
   description = "Total recursion schemes for Idris";
 
   nixConfig = {
+    ## NB: This is a consequence of using `self.pkgsLib.runEmptyCommand`, which
+    ##     allows us to sandbox derivations that otherwise can’t be.
+    allow-import-from-derivation = true;
     ## https://github.com/NixOS/rfcs/blob/master/rfcs/0045-deprecate-url-syntax.md
     extra-experimental-features = ["no-url-literals"];
-    extra-substituters = ["https://cache.garnix.io"];
+    extra-substituters = [
+      "https://cache.garnix.io"
+      "https://sellout.cachix.org"
+    ];
     extra-trusted-public-keys = [
       "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+      "sellout.cachix.org-1:v37cTpWBEycnYxSPAgSQ57Wiqd3wjljni2aC0Xry1DE="
     ];
     ## Isolate the build.
-    registries = false;
     sandbox = "relaxed";
+    use-registries = false;
   };
 
-  outputs = {
-    bash-strict-mode,
-    flake-utils,
-    flaky,
-    nixpkgs,
-    nixpkgs-23_05,
-    self,
-  }: let
-    pname = "iaia";
-
-    supportedSystems = flaky.lib.defaultSystems;
-  in
-    {
-      schemas = {
-        inherit
-          (flaky.schemas)
-          schemas
-          overlays
-          packages
-          devShells
-          projectConfigurations
-          checks
-          ;
-      };
-
-      overlays = {
-        default = final: prev: let
-          pkgs-23_05 = import nixpkgs-23_05 {inherit (final) system;};
-        in {
-          idrisPackages = prev.idrisPackages.override {
-            ## NB: 23.11 doesn’t have a working Idris, so this provides one that
-            ##     should work regardless.
-            idris-no-deps = pkgs-23_05.idrisPackages.idris-no-deps;
-            overrides = self.overlays.idris final prev;
-          };
-        };
-
-        idris = final: prev: ifinal: iprev: {
-          ${pname} = self.packages.${final.system}.${pname};
-        };
-      };
-
-      homeConfigurations =
-        builtins.listToAttrs
-        (builtins.map
-          (flaky.lib.homeConfigurations.example pname self [
-            ({
-              lib,
-              pkgs,
-              ...
-            }: {
-              home = {
-                packages = [
-                  (pkgs.idrisPackages.with-packages [
-                    pkgs.idrisPackages.${pname}
-                  ])
-                ];
-                stateVersion = lib.mkForce "23.05";
-              };
-            })
-          ])
-          supportedSystems);
-    }
-    // flake-utils.lib.eachSystem supportedSystems (system: let
-      pkgs = import nixpkgs {inherit system;};
-      pkgs-23_05 = import nixpkgs-23_05 {inherit system;};
-
-      src = pkgs.lib.cleanSource ./.;
-    in {
-      packages = {
-        default = self.packages.${system}.${pname};
-
-        ${pname} =
-          bash-strict-mode.lib.checkedDrv
-          pkgs
-          (pkgs-23_05.idrisPackages.build-idris-package {
-            inherit pname src;
-
-            version = "0.2.0";
-
-            idrisDeps = [pkgs-23_05.idrisPackages.comonad];
-
-            doCheck = true;
-
-            meta = {
-              description = "Total recursion schemes for Idris";
-              homepage = "https://github.com/sellout/iaia";
-              license = nixpkgs.lib.licenses.agpl3;
-              maintainers = [nixpkgs.lib.maintainers.sellout];
-            };
-          });
-      };
-
-      projectConfigurations =
-        flaky.lib.projectConfigurations.default {inherit pkgs self;};
-
-      devShells =
-        ## TODO: Some Haskell packages (like pandoc) have issues on i686. But it
-        ##       should be possible to just disable checks or something in most
-        ##       cases.
-        if system == "i686-linux"
-        then {}
-        else
-          self.projectConfigurations.${system}.devShells
-          // {default = flaky.lib.devShells.default system self [] "";};
-      checks = self.projectConfigurations.${system}.checks;
-      formatter = self.projectConfigurations.${system}.formatter;
-    });
+  ## The flake isn’t a Nix expression, so it’s clearer to keep `outputs` (which
+  ## is) in a separate file.
+  outputs = inputs: import .config/flake/outputs.nix inputs;
 
   inputs = {
-    bash-strict-mode = {
-      inputs = {
-        flake-utils.follows = "flake-utils";
-        flaky.follows = "flaky";
-        nixpkgs.follows = "nixpkgs";
-      };
-      url = "github:sellout/bash-strict-mode";
-    };
+    ## Flaky should generally be the source of truth for its inputs.
+    flaky.url = "github:sellout/flaky";
 
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-utils.follows = "flaky/flake-utils";
+    nixpkgs.follows = "flaky/nixpkgs";
+    systems.follows = "flaky/systems";
 
-    flaky = {
-      inputs = {
-        bash-strict-mode.follows = "bash-strict-mode";
-        flake-utils.follows = "flake-utils";
-        nixpkgs.follows = "nixpkgs";
-      };
-      url = "github:sellout/flaky";
-    };
-
-    nixpkgs.url = "github:NixOS/nixpkgs/release-23.11";
-
-    ## Idris is broken in Nixpkgs 23.11
+    ## Idris is broken in the nixpkgs that Flaky tracks.
     nixpkgs-23_05.url = "github:NixOS/nixpkgs/release-23.05";
   };
 }
